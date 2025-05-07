@@ -1,0 +1,9 @@
+repos:
+- repo: https://github.com/...(your github repository URL)
+  rev: v0.4.4
+  hooks:
+    - id: ruff
+      types_or: [ python, pyi ]
+      args: ["--fix", "--exit-non-zero-on-fix"]
+    - id: ruff-format
+      types_or: [ python, pyi ]
