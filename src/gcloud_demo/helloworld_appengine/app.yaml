@@ -1,0 +1,4 @@
+runtime: python313
+handlers:
+- url: /.*
+  script: auto

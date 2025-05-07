@@ -1,0 +1,2 @@
+# This is needed by app engine
+Flask==3.0.0
