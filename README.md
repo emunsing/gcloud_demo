@@ -13,14 +13,22 @@ Relevant tutorials:
 
 Run on App Engine; run on Cloud Run
 
+# FastAPI
+- Run locally with uvicorn like `$ uvicorn fastapi_appengine.main:app --reload` where *fastapi_appengine.main* is the python file and `app` is the entrypoint
+- 
+
+
 # App Engine
 
 ## Hello World
 [Following this tutorial](https://cloud.google.com/appengine/docs/standard/python3/building-app)
+- Test locally with flask: `$ python main.py`
 - [Create project](https://console.cloud.google.com/projectselector2) under the Google Cloud Platform- [Install gcloud SDK](https://cloud.google.com/sdk/docs/install) - note: don't run `$ source install.sh` just run `$ ./install.sh`
 - Enable Cloud Build API `gcloud services enable cloudbuild.googleapis.com`
   - As prompted, run `$ ./google-cloud-sdk/bin/gcloud init` to sign in to your Google account
 - run `$ gcloud app deploy` from the directory containing `app.yaml`
+
+
 
 ## App Engine General Notes:
 - A minimal app engine project requires 3 files: app.yaml, requirements.txt, main.py
