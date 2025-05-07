@@ -1,4 +1,3 @@
 runtime: python313
-handlers:
-- url: /.*
-  script: auto
+
+entrypoint: gunicorn -b :$PORT main:app

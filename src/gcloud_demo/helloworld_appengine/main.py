@@ -18,5 +18,5 @@ def hello_world():
 
 
 if __name__ == "__main__":
-    # This is used when running locally only, and is replaced by Gunicornon app engine
+    # This is used when running locally only, and is replaced by Gunicorn on app engine
     app.run(host="127.0.0.1", port=8080, debug=True)
