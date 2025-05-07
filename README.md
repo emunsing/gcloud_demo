@@ -30,9 +30,25 @@ Run on App Engine; run on Cloud Run
 
 # Cloud Run notes:
 
-## Hello World
+## Hello World - build from source
 - Enable Cloud Run and CloudBuild APIs: `$ gcloud services enable run.googleapis.com cloudbuild.googleapis.com`
+- Populate main.py and requirements.txt
+- To build and deploy, run `$ gcloud run deploy --source .` - this builds the container from raw source (no dockerfile)
 
+## Hello World - build from Dockerfile
+Tutorials: [Youtube tutorial 1 for Hello World using Dockerfile](https://www.youtube.com/watch?v=CxzaOHTwqEI) on Cloud Console, and 
+[Youtube tutorial 2 for deploying from local terminal](https://www.youtube.com/watch?v=FPFDg5znLTM) (start watching after 7:00)
+- Additionally needs Dockerfile, .dockerignore, .gcloudignore 
+- Run with Google Cloud Run "Local run" configuration within Pycharm, pointing to the Dockerfile, to confirm appropriate Dockerfile configuration prior to running. 
+- After confirming that it runs/builds correctly locally, build the container and push to the google container repository with the command `gcloud builds submit --tag gcr.io/<PROJECT_NAME>/<YOUR_TAG_NAME> --project=<PROJECT_NAME>`
+- Your artifact will be visible in https://console.cloud.google.com/storage/browser with the project name and the suffix `_cloudbuild`
+- Deploy with `gcloud run deploy --image gcr.io/<PROJECT_NAME>/<YOUR_TAG_NAME> --platform managed --project=<PROJECT_NAME>`
+- [Testing locally](https://cloud.google.com/run/docs/testing/local#docker): `PORT=8080 && docker run -p 9090:${PORT} -e PORT=${PORT} gcr.io/${PROJECT_NAME}/${TAG}`
+
+```
+gcloud builds submit --tag gcr.io/${PROJECT_NAME}/${TAG} --project=$PROJECT_NAME
+gcloud run deploy --image gcr.io/${PROJECT_NAME}/${TAG} --platform managed --project=$PROJECT_NAME
+```
 
 ## Resources used:
 - 
