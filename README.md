@@ -3,19 +3,37 @@ Google cloud (App Engine and Cloud Run) deployment tutorial/demo
 
 General goal: User query -> router -> result -> user + storage (redis or SQL)
 
-Relevant tutorials:
-- "Hello World" [HTML on App Engine]([Following this tutorial](https://cloud.google.com/appengine/docs/standard/python3/building-app)
-- "Hello World" [HTML on Cloud Run](https://cloud.google.com/run/docs/quickstarts/build-and-deploy/deploy-python-service)
-- 
-- App Engine: Used 
-- Add Redis
+- "Hello World" Flask application
+- "Hello World" FastAPI application
 - Add SQL
-
-Run on App Engine; run on Cloud Run
+- Add Redis
 
 # FastAPI
 - Run locally with uvicorn like `$ uvicorn fastapi_appengine.main:app --reload` where *fastapi_appengine.main* is the python file and `app` is the entrypoint
-- 
+
+# SQL in Google Cloud:
+[Tutorial on LinkedIn here](https://www.linkedin.com/pulse/setting-up-postgresql-google-cloud-sql-comprehensive-guide-moopt-kb2hc)
+- Enable sql services
+- Create a new SQL *service* instance
+- Create a new *database*
+- Create a new *user*
+- assumes cloud-sql-proxy is installed and that default credentials are set up with `$ gcloud auth application-default login`
+```
+gcloud services enable sqladmin.googleapis.com
+gcloud sql instances create $SQL_INSTANCE --database-version=POSTGRES_14 --tier=db-f1-micro --region=us-west1 --root-password=$SQL_INSTANCE_PW
+gcloud sql databases create $SQL_DB_NAME --instance=$SQL_INSTANCE
+gcloud sql users create $SQL_USER --instance=$SQL_INSTANCE --password=$SQL_PW
+gcloud sql instances describe $SQL_INSTANCE --format="value(connectionName)" > $CONNECTION_NAME
+cloud-sql-proxy $CONNECTION_NAME --port 5433
+psql "host=127.0.0.1 port=5433 dbname=$SQL_DB_NAME user=$SQL_DEV_USER password=$SQL_DEV_PW"
+```
+
+
+To stop/start instances to avoid costs:
+```
+gcloud sql instances patch $SQL_INSTANCE --activation-policy NEVER
+gcloud sql instances patch $SQL_INSTANCE --activation-policy ALWAYS
+```
 
 
 # App Engine
@@ -37,6 +55,8 @@ Run on App Engine; run on Cloud Run
 ## FastAPI
 Basically the same, just adding uvicorn to *requirements.txt* and changing app.yaml entrypoint to `entrypoint: uvicorn main:app --host=0.0.0.0 --port=$PORT`
 
+## FastAPI + SQL
+
 
 
 
@@ -57,6 +77,7 @@ gcloud run deploy --image gcr.io/${PROJECT_NAME}/${TAG} --platform managed --pro
 ```
 
 ## Hello World - build from source
+- "Hello World" [tutorial on Cloud Run](https://cloud.google.com/run/docs/quickstarts/build-and-deploy/deploy-python-service)
 - Enable Cloud Run and CloudBuild APIs: `$ gcloud services enable run.googleapis.com cloudbuild.googleapis.com`
 - Populate main.py and requirements.txt
 - To build and deploy, run `$ gcloud run deploy --source .` - this builds the container from raw source (no dockerfile)
@@ -69,5 +90,6 @@ Tutorials: [Youtube tutorial 1 for Hello World using Dockerfile](https://www.you
 [Tutorial blog post on dev.to](https://dev.to/0xnari/deploying-fastapi-app-with-google-cloud-run-13f3))
 Only change: Entrypoint in dockerfile
 
-## Resources used:
-- 
+## Software requirements Resources used:
+- [Install gcloud SDK](https://cloud.google.com/sdk/docs/install) - note: don't run `$ source install.sh` just run `$ ./install.sh`
+- Cloud SQL Proxy (`brew install cloud-sql-proxy`)
