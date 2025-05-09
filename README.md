@@ -97,3 +97,5 @@ Only change: Entrypoint in dockerfile
 ## Software requirements Resources used:
 - [Install gcloud SDK](https://cloud.google.com/sdk/docs/install) - note: don't run `$ source install.sh` just run `$ ./install.sh`
 - Cloud SQL Proxy (`brew install cloud-sql-proxy`)
+- Google Maps API for populating- [get an API key](https://developers.google.com/maps/documentation/geocoding/get-api-key)
+- 

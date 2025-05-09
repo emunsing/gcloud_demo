@@ -19,6 +19,9 @@ python-dotenv = "*"
 pydantic-settings = "*"
 google-cloud-storage = "*"
 uvicorn = {extras = ["standard"], version = "*"}
+# The following are only needed for populating the database
+attrs = "*"
+numpy = "*"
 
 [tool.ruff]
 line-length = 88
