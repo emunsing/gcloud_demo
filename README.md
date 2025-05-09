@@ -11,6 +11,11 @@ General goal: User query -> router -> result -> user + storage (redis or SQL)
 # FastAPI
 - Run locally with uvicorn like `$ uvicorn fastapi_appengine.main:app --reload` where *fastapi_appengine.main* is the python file and `app` is the entrypoint
 
+# Docker notes
+- Build the current directory  `docker build -t my_tag .`
+- Run a shell in the container: `docker run -it --entrypoint /bin/sh my_tag`
+
+
 # SQL in Google Cloud:
 [Tutorial on LinkedIn here](https://www.linkedin.com/pulse/setting-up-postgresql-google-cloud-sql-comprehensive-guide-moopt-kb2hc)
 - Enable sql services
@@ -27,7 +32,6 @@ gcloud sql instances describe $SQL_INSTANCE --format="value(connectionName)" > $
 cloud-sql-proxy $CONNECTION_NAME --port 5433
 psql "host=127.0.0.1 port=5433 dbname=$SQL_DB_NAME user=$SQL_DEV_USER password=$SQL_DEV_PW"
 ```
-
 
 To stop/start instances to avoid costs:
 ```

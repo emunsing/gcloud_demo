@@ -13,6 +13,11 @@ gunicorn = "*"
 sqlmodel = "*"
 redis = "*"
 mypy = "*"
+sqlalchemy = "*"
+psycopg2-binary = "*"
+python-dotenv = "*"
+pydantic-settings = "*"
+google-cloud-storage = "*"
 uvicorn = {extras = ["standard"], version = "*"}
 
 [tool.ruff]
