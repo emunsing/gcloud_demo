@@ -8,13 +8,22 @@ General goal: User query -> router -> result -> user + storage (redis or SQL)
 - Add SQL
 - Add Redis
 
-# FastAPI
+## FastAPI
 - Run locally with uvicorn like `$ uvicorn fastapi_appengine.main:app --reload` where *fastapi_appengine.main* is the python file and `app` is the entrypoint
 
-# Docker notes
+## Docker notes
 - Build the current directory  `docker build -t my_tag .`
 - Run a shell in the container: `docker run -it --entrypoint /bin/sh my_tag`
 
+## Pydantic
+Export environment variables from .env like `$ export $(grep -v '^#' .env.local | xargs)`
+
+## Alembic
+- Initialize alembic: `alembic init alembic`
+- Create migration: `alembic revision --autogenerate -m "Notes"`
+- Run migration: `alembic upgrade head`
+  - **Note**: When using SQLModel, not all data types automatically transfer to base SQLAlchemy types recognized by Alembic; may need to manually edit the migration file e.g. to change `sqlmodel.sql.sqltypes.AutoString` to `sqlalchemy.types.String`.
+  - 
 
 # SQL in Google Cloud:
 [Tutorial on LinkedIn here](https://www.linkedin.com/pulse/setting-up-postgresql-google-cloud-sql-comprehensive-guide-moopt-kb2hc)

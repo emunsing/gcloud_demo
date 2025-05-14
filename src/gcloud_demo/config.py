@@ -2,6 +2,10 @@ from pydantic_settings import BaseSettings
 from functools import lru_cache
 import os
 
+"""
+This is used for storing SQL connection info for the fastapisql_ and fastapisqlredis_ demos
+"""
+
 class Settings(BaseSettings):
     # Database settings
     SQL_USER: str
@@ -22,7 +26,6 @@ class Settings(BaseSettings):
 
     @property
     def DB_URL(self) -> str:
-        # Check if running in Cloud Run
         if self.IS_CLOUD_RUN:
             db_socket_dir = os.getenv("DB_SOCKET_DIR", "/cloudsql")
             return (
