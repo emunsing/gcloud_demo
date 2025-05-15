@@ -1,0 +1,3 @@
+# This is needed by app engine
+uvicorn[standard]
+fastapi

@@ -7,6 +7,10 @@ ENV APP_HOME=/app
 WORKDIR $APP_HOME
 
 COPY . .
+# Note: The below move changes have not been double-checked or tested
+COPY ../config.py ./config.py
+COPY ../thirdparty.py ./thirdparty.py
+COPY ../models ./models
 
 RUN pip install --no-cache-dir -r requirements.txt
 

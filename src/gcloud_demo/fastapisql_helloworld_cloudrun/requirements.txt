@@ -1,0 +1,8 @@
+gunicorn==23.0.0  # Note: Gunicorn is required for Cloud Run
+uvicorn[standard]
+fastapi
+sqlalchemy
+psycopg2-binary
+python-dotenv
+pydantic-settings
+google-cloud-storage

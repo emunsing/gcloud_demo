@@ -24,6 +24,9 @@ class Settings(BaseSettings):
     API_VERSION: str = "v1"
     DEBUG: bool = False
 
+    # Other settings
+    LOG_LEVEL: str = "WARNING"
+
     @property
     def DB_URL(self) -> str:
         if self.IS_CLOUD_RUN:

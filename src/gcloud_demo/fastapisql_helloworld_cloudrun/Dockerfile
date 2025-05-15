@@ -5,10 +5,10 @@ ENV PYTHONUNBUFFERED=True
 
 ENV APP_HOME=/app
 WORKDIR $APP_HOME
-COPY . ./
-COPY ../fastapi_appengine/main.py ./main.py
+
+COPY . .
+COPY ../config.py ./config.py
 
 RUN pip install --no-cache-dir -r requirements.txt
 
-# The final argument is the name of the python file, and the object to run
-CMD exec uvicorn --host=0.0.0.0 --port=$PORT main:app
+CMD exec uvicorn main:app --host=0.0.0.0 --port=$PORT
