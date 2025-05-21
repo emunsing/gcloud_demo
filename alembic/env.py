@@ -6,7 +6,7 @@ from sqlalchemy import pool
 from alembic import context
 from src.gcloud_demo.config import settings
 from sqlmodel import SQLModel
-from src.gcloud_demo.models.models import ZipCode
+from src.gcloud_demo.models.sql_models import ZipCodeRecord
 
 config = context.config
 if config.config_file_name is not None:

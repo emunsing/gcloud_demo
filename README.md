@@ -6,7 +6,7 @@ General goal: User query -> router -> result -> user + storage (redis or SQL)
 - "Hello World" Flask application
 - "Hello World" FastAPI application
 - Add SQL
-- Add Redis
+- Add Redis (TODO)
 
 ## FastAPI
 - Run locally with uvicorn like `$ uvicorn fastapi_appengine.main:app --reload` where *fastapi_appengine.main* is the python file and `app` is the entrypoint
@@ -77,7 +77,7 @@ Basically the same, just adding uvicorn to *requirements.txt* and changing app.y
 
 ## Cloud Run General Notes:
 - Additionally needs Dockerfile, .dockerignore, .gcloudignore 
-- Run with Google Cloud Run "Local run" configuration within Pycharm, pointing to the Dockerfile, to confirm appropriate Dockerfile configuration prior to running. 
+- Run with Google Cloud Run PyCharm plug "Local run" configuration within Pycharm, pointing to the Dockerfile, to confirm appropriate Dockerfile configuration prior to running. 
 - After confirming that it runs/builds correctly locally, build the container and push to the google container repository with the command `gcloud builds submit --tag gcr.io/${PROJECT_NAME}/${TAG} --project=$PROJECT_NAME`
 - Your artifact will be visible in https://console.cloud.google.com/storage/browser with the project name and the suffix `_cloudbuild`
 - Deploy with `gcloud run deploy --image gcr.io/${PROJECT_NAME}/${TAG} --platform managed --project=$PROJECT_NAME`

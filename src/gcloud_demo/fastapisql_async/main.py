@@ -1,0 +1,96 @@
+import contextlib
+import logging
+import os
+from typing import AsyncIterator, TypedDict
+
+import aiohttp
+from fastapi import FastAPI, Depends, Request, BackgroundTasks
+from sqlmodel import Session as SQLModelSession, create_engine, select
+
+from gcloud_demo.config import settings
+from gcloud_demo.models.sql_models import ZipCodeRecord
+from gcloud_demo.models.api_models import ZipCode
+
+## THIRD_PARTY FUNCTION- COULD BE MOVED TO A DIFFERENT FILE
+GEOCODING_API_URL = 'https://maps.googleapis.com/maps/api/geocode/json'
+GMAPS_API_KEY = os.environ['GOOGLE_API_KEY']
+async def get_lat_long(address, aiohttp_session: aiohttp.ClientSession):
+    params = {
+        'address': address,
+        'key': GMAPS_API_KEY
+    }
+    async with aiohttp_session.post(GEOCODING_API_URL, params=params) as response:
+        result = await response.json()
+
+    if result['status'] == 'OK':
+        location = result['results'][0]['geometry']['location']
+        return location['lat'], location['lng']
+    else:
+        logging.warning(f"Error geocoding {address}: {result['status']}")
+        return None, None
+
+"""
+FastAPI App demonstrating async connections to 3rd-party API and SQLAlchemy
+To run locally, `$ uvicorn fastapisql_appengine.main:app --reload` and go to the localhost server indicated (typically  http://127.0.0.1:8080).
+
+To run on Google App engine, run `gcloud app deploy` from the directory containing app.yaml
+"""
+
+logging.basicConfig(level=settings.LOG_LEVEL)
+db_engine = create_engine(settings.DB_URL)
+
+def get_db_session():
+    with SQLModelSession(db_engine) as db_session:
+        yield db_session
+
+# Database operations
+def get_zipcode(db_session: SQLModelSession, zipcode_query: str) -> ZipCodeRecord | None:
+    stmt = select(ZipCodeRecord).where(ZipCodeRecord.zipcode == zipcode_query)
+    result = db_session.exec(stmt).first()
+    return result  # returns ZipCode instance if found, else None
+
+
+def create_zipcode_record(db_session: SQLModelSession, new_zip: ZipCodeRecord) -> None:
+    db_session.add(new_zip)
+    db_session.commit()
+    db_session.refresh(new_zip)  # refresh to load the newly written record fully
+    return
+
+
+# FastAPI setup
+class State(TypedDict):
+    aiohttp_session: aiohttp.ClientSession
+
+# Define the app State here.
+@contextlib.asynccontextmanager
+async def lifespan(app: FastAPI) -> AsyncIterator[State]:
+    async with aiohttp.ClientSession() as session:
+        yield {"aiohttp_session": session}
+
+app = FastAPI(lifespan=lifespan)
+
+@app.get("/zipcode/{zipcode_str}", response_model=ZipCode)
+async def read_or_create_zipcode(zipcode_str: str,
+                                 request: Request,
+                                 background_tasks: BackgroundTasks,
+                                 db_session: SQLModelSession = Depends(get_db_session)):
+    zipcode_db = get_zipcode(db_session, zipcode_str)
+    if zipcode_db:
+        logging.info(f"{zipcode_str} found in database.")
+        return ZipCode(source="db", **zipcode_db.model_dump())
+    else:
+        lat, lon = await get_lat_long(zipcode_str, aiohttp_session=request.state.aiohttp_session)  # Will return none, none if not found or if there is a third-party error
+        if lat is None:
+            logging.warning(f"Could not find lat/long for {zipcode_str}.")
+        else:
+            logging.info(f"Returned 3rd-party data for {zipcode_str}: {lat}, {lon}")
+
+        zipcode_data = {
+            "zipcode": zipcode_str,
+            "exists": lat is not None,
+            "latitude": lat,
+            "longitude": lon
+        }
+        background_tasks.add_task(create_zipcode_record, db_session, ZipCodeRecord(**zipcode_data))
+        response = ZipCode(source="gmaps", **zipcode_data)
+        return response
